@@ -1,17 +1,16 @@
 'use client'
 
 import { Button } from "../ui/button";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage, Form } from "../ui/form";
 import { useRouter } from "next/navigation";
 
+export const FormPage = () => {
 
-export const HomePage = () => {
-
-  const router = useRouter();
+  const router = useRouter()
 
   const formSchema = z.object({
     pageName: z.string(),
@@ -68,7 +67,7 @@ export const HomePage = () => {
         }
       />
         ))}
-        <Button type="submit" onClick={() => router.push(`/lpdelpdlpelpkopelpd`) }>貸し借り管理を作成する</Button>
+        <Button type="submit" onClick={() => router.back()}>貸し借り管理を作成する</Button>
       </form>
     </Form>
   );
