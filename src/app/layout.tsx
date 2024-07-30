@@ -23,7 +23,9 @@ export default function RootLayout({
     <html lang="en" >
       <body className={cn(fontSans.variable)}>
         <Header />
-        {children}
+        <div className="max-w-4xl p-3 m-auto">
+          {children}
+        </div>
       </body>
     </html>
   );
