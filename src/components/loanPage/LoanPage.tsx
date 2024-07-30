@@ -23,7 +23,7 @@ export const LoanPage = (props: Props) => {
     <div className='space-y-5 md:space-y-7'>
       <TotalLoan />
 
-      <div>
+      <div className='space-y-3'>
         <div>履歴</div>
         {isLoading ? <div>loading....</div> :
          data.map((item: any, index: number) => (

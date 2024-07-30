@@ -15,8 +15,6 @@ export const History = (props:Props) => {
 
   const { name, amount, time, note } = props;
 
-  console.log(typeof time);
-
   const date = new Date(time);
 
 

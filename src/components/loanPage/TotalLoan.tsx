@@ -34,6 +34,26 @@ export const TotalLoan = () => {
 
   const [isFull, setIsFull] = useState<boolean>(false)
 
+  const {data, error, isLoading} = useSWR(`/api/getHistory/57fe2f9c743d4a63a1c53c04ae4bff40`, fetcher)
+
+  if (isLoading) return <div>loading....</div>
+
+  const formatData = data.reduce((acc:any, record:any) => {
+    const isRecord = acc.find((item:any) => item.payer_name === record.payer_name);
+    if (isRecord) {
+      isRecord.pay_amount += record.pay_amount
+    } else {
+      acc.push({payer_name: record.payer_name, pay_amount: record.pay_amount})
+    }
+    return acc
+  }, [])
+
+  const averageAmount = formatData.reduce((acc:any, record:any) => {
+    acc += record.pay_amount
+    return acc
+  }, 0) / formatData.length
+
+
   const switchHandler = (checked: boolean) => {
     setIsFull(checked)
   }
@@ -43,14 +63,14 @@ export const TotalLoan = () => {
     <Card className="select-none">
       <div className="flex items-center justify-end space-x-2 m-3">
         <Switch onCheckedChange={switchHandler}/>
-        <Label>金額をすべて表示</Label>
+        <Label>支払い総額を表示</Label>
       </div>
 
       <div className="text-center p-3">
-        {TEST.map((item, index) => (
+        {formatData.map((item:any, index:any) => (
           <div key={index} className="flex justify-between border-b-2 border-slate-400 mb-3">
-            <div>{item.userName}</div>
-            <div>{isFull ? item.amount : '---'}</div>
+            <div>{item.payer_name}</div>
+            <div>{isFull ? item.pay_amount : averageAmount-item.pay_amount}</div>
           </div>
           ))}
       </div>
