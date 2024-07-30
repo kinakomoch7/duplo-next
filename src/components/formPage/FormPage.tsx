@@ -16,20 +16,20 @@ export const FormPage = () => {
   const router = useRouter()
 
   const formSchema = z.object({
-    payerName: z.string({required_error: "名前を入力してください"}),
-    amount: z.number({required_error: "金額を入力してください"}),
-    payTime: z.date({required_error: "日付を入力してください"}),
-    note: z.string(),
+    payerName: z.string().min(1, {message: "名前を入力してください"}),
+    amount: z.number().min(1, {message: "金額を入力してください"}),
+    payTime: z.date(),
+    note: z.string().min(1, {message: "メモを入力してください"}),
   });
 
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      payerName: "",
+      payerName: "山田",
       amount: 1000,
       payTime: new Date(),
-      note: "",
+      note: "メモ",
     },
   });
 
@@ -43,7 +43,6 @@ export const FormPage = () => {
       },
     });
 
-    const data = await res.json();
     if (res.status === 200) {
       router.back();
     }
@@ -72,7 +71,7 @@ export const FormPage = () => {
             <FormItem>
               <FormLabel>支払い金額</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} type="number" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -123,7 +122,7 @@ export const FormPage = () => {
                 <Input {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                支払内容に関するメモを入力してください
               </FormDescription>
               <FormMessage />
             </FormItem>

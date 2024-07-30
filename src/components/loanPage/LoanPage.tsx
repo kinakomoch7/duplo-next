@@ -17,11 +17,11 @@ export const LoanPage = (props: Props) => {
 
   const router = useRouter();
 
-  const {data, error, isLoading} = useSWR(`/api/getHistory/57fe2f9c743d4a63a1c53c04ae4bff40`, fetcher)
+  const {data, error, isLoading} = useSWR(`/api/getHistory/${pageId}`, fetcher)
 
   return (
     <div className='space-y-5 md:space-y-7'>
-      <TotalLoan />
+      <TotalLoan pageId={pageId} />
 
       <div className='space-y-3'>
         <div>履歴</div>

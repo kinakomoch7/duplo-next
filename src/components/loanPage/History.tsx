@@ -21,7 +21,7 @@ export const History = (props:Props) => {
   return (
     <Card className="p-3">
       <div className="flex flex-1 justify-between">
-        <div>{name}</div>
+        <div className="font-bold">{name}</div>
         <div>{amount.toLocaleString()}円</div>
         <Popover>
           <PopoverTrigger asChild>
@@ -39,8 +39,8 @@ export const History = (props:Props) => {
 
       </div>
 
-      <div className="flex flex-1 justify-around">
-        <div>{note}</div>
+      <div className="flex flex-1 justify-between">
+        <div className="text-sm">{'メモ：' + note}</div>
         <div>{date.toLocaleDateString()}</div>
       </div>
     </Card>

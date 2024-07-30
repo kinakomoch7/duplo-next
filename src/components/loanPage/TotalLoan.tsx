@@ -6,35 +6,17 @@ import { Switch } from "../ui/switch"
 import { fetcher } from "../common/Fetcher"
 import useSWR from "swr";
 
-const TEST = [
-  {
-    userName: 'ユーザネーム１',
-    amount: '金額１'
-  },
-  {
-    userName: 'ユーザネーム２',
-    amount: '金額２'
-  },
-  {
-    userName: 'ユーザネーム３',
-    amount: '金額３'
-  },
-  {
-    userName: 'ユーザネーム４',
-    amount: '金額４'
-  },
-  {
-    userName: 'ユーザネーム５',
-    amount: '金額５'
-  }
-]
+type Props = {
+  pageId: string;
+}
 
+export const TotalLoan = (props:Props) => {
 
-export const TotalLoan = () => {
+  const { pageId } = props;
 
   const [isFull, setIsFull] = useState<boolean>(false)
 
-  const {data, error, isLoading} = useSWR(`/api/getHistory/57fe2f9c743d4a63a1c53c04ae4bff40`, fetcher)
+  const {data, error, isLoading} = useSWR(`/api/getHistory/${pageId}`, fetcher)
 
   if (isLoading) return <div>loading....</div>
 
