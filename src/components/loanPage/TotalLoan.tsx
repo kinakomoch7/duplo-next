@@ -33,7 +33,6 @@ const TEST = [
 export const TotalLoan = () => {
 
   const [isFull, setIsFull] = useState<boolean>(false)
-  const {data, error, isLoading} = useSWR(`/api/totalLoan/57fe2f9c743d4a63a1c53c04ae4bff40`, fetcher)
 
   const switchHandler = (checked: boolean) => {
     setIsFull(checked)

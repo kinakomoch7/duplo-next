@@ -28,7 +28,10 @@ export async function GET(req: NextRequest, {params}: {params:{ eventId: string 
     `, [eventId]);
 
     client.release();
-    return NextResponse.json(result.rows);
+
+    const data = result.rows;
+
+    return NextResponse.json(data);
 
   } catch (error) {
     console.error(error);

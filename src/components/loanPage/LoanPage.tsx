@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { CopyUrl } from './CopyUrl';
 import { TotalLoan } from './TotalLoan';
 import { History } from './History';
+import useSWR from 'swr';
+import { fetcher } from '../common/Fetcher';
 
 type Props = {
   pageId: string;
@@ -15,13 +17,18 @@ export const LoanPage = (props: Props) => {
 
   const router = useRouter();
 
+  const {data, error, isLoading} = useSWR(`/api/getHistory/57fe2f9c743d4a63a1c53c04ae4bff40`, fetcher)
+
   return (
     <div className='space-y-5 md:space-y-7'>
       <TotalLoan />
 
       <div>
         <div>履歴</div>
-        <History />
+        {isLoading ? <div>loading....</div> :
+         data.map((item: any, index: number) => (
+          <History key={index} name={item.payer_name} amount={item.pay_amount} time={item.pay_time} note={item.note} />
+        ))}
       </div>
 
       <div>

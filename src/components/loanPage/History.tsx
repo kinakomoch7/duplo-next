@@ -3,25 +3,28 @@ import { Card } from "../ui/card"
 import { Popover, PopoverTrigger } from "../ui/popover"
 import { Button } from "../ui/button"
 
-const TEST = [
-  {
-    userName: 'ユーザネーム１',
-    amount: '金額１',
-    date: new Date(),
-    note: 'ノート１'
-  }
-]
 
-export const History = () => {
+type Props = {
+  name: string;
+  amount: string;
+  time: string;
+  note: string;
+}
 
-  const { userName, amount, date, note } = TEST[0]
+export const History = (props:Props) => {
+
+  const { name, amount, time, note } = props;
+
+  console.log(typeof time);
+
+  const date = new Date(time);
 
 
   return (
     <Card className="p-3">
       <div className="flex flex-1 justify-between">
-        <div>{userName}</div>
-        <div>{amount}</div>
+        <div>{name}</div>
+        <div>{amount.toLocaleString()}円</div>
         <Popover>
           <PopoverTrigger asChild>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 hover:cursor-pointer">
@@ -40,8 +43,9 @@ export const History = () => {
 
       <div className="flex flex-1 justify-around">
         <div>{note}</div>
-        <div>{date.toString()}</div>
+        <div>{date.toLocaleDateString()}</div>
       </div>
     </Card>
   )
 }
+
