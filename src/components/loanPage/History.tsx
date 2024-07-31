@@ -17,7 +17,7 @@ import { Input } from "../ui/input";
 
 type Props = {
   name: string;
-  amount: string;
+  amount: number;
   time: string;
   note: string;
   historyId: number;
@@ -43,10 +43,10 @@ export const History = (props:Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      payerName: "山田",
-      amount: 1000,
-      payTime: new Date(),
-      note: "メモ",
+      payerName: name,
+      amount: amount,
+      payTime: new Date(time),
+      note: note,
     },
   });
 
