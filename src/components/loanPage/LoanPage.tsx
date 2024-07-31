@@ -27,7 +27,7 @@ export const LoanPage = (props: Props) => {
         <div>履歴</div>
         {isLoading ? <div>loading....</div> :
          data.map((item: any, index: number) => (
-          <History key={index} name={item.payer_name} amount={item.pay_amount} time={item.pay_time} note={item.note} />
+          <History key={index} name={item.payer_name} amount={item.pay_amount} time={item.pay_time} note={item.note} historyId={item.history_id} pageId={pageId}/>
         ))}
       </div>
 

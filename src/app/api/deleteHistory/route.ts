@@ -6,27 +6,11 @@ export async function POST(req: NextRequest) {
   const data = await req.json();
   const client = await pool.connect();
 
-
   try {
   
     await client.query(`
-      INSERT INTO
-        history(
-          event_id,
-          payer_name,
-          pay_amount,
-          pay_time,
-          note
-        )
-        VALUES (
-          $1,
-          $2,
-          $3,
-          $4,
-          $5
-        )
-    
-      `, [data.eventId, data.payerName, data.amount, data.payTime, data.note]);
+      DELETE FROM history WHERE history_id = $1
+      `, [data.historyId]);
   
     return NextResponse.json({
         message: "success"
