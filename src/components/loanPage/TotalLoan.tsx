@@ -45,7 +45,7 @@ export const TotalLoan = (props:Props) => {
     <Card className="select-none">
       <div className="flex items-center justify-end space-x-2 m-3">
         <Switch onCheckedChange={switchHandler}/>
-        <Label>支払い総額を表示</Label>
+        <Label>総額を表示</Label>
       </div>
 
       <div className="text-center p-3">
