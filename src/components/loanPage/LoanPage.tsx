@@ -26,6 +26,7 @@ export const LoanPage = (props: Props) => {
       <div className='space-y-3'>
         <div>履歴</div>
         {isLoading ? <div>loading....</div> :
+         data.length === 0 ? <div>履歴がありません</div> :
          data.map((item: any, index: number) => (
           <History key={index} name={item.payer_name} amount={item.pay_amount} time={item.pay_time} note={item.note} historyId={item.history_id} pageId={pageId}/>
         ))}

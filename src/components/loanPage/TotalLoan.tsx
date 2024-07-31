@@ -49,7 +49,8 @@ export const TotalLoan = (props:Props) => {
       </div>
 
       <div className="text-center p-3">
-        {formatData.map((item:any, index:any) => (
+        {formatData.length === 0 ? <div>履歴がありません</div> :
+        formatData.map((item:any, index:any) => (
           <div key={index} className="flex justify-between border-b-2 border-slate-400 mb-3">
             <div>{item.payer_name}</div>
             <div>{isFull ? item.pay_amount : averageAmount-item.pay_amount}</div>
