@@ -21,13 +21,16 @@ export const LoanPage = (props: Props) => {
 
   return (
     <div className='space-y-5 md:space-y-7'>
-      <TotalLoan pageId={pageId} />
+      <div>
+        <div className='font-bold mt-3 mb-3'>支払額</div>
+        <TotalLoan pageId={pageId} />
+      </div>
 
       <div className='space-y-3'>
-        <div>履歴</div>
+        <div className='font-bold'>履歴</div>
         {isLoading ? <div>loading....</div> :
          data.length === 0 ? <div>履歴がありません</div> :
-         data.map((item: any, index: number) => (
+         data.sort( (a: any, b: any) => new Date(b.pay_time).getTime() - new Date(a.pay_time).getTime()).map((item: any, index: number) => (
           <History key={index} name={item.payer_name} amount={item.pay_amount} time={item.pay_time} note={item.note} historyId={item.history_id} pageId={pageId}/>
         ))}
       </div>

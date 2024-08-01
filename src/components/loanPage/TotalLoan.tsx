@@ -5,7 +5,6 @@ import { fetcher } from "../common/Fetcher"
 import useSWR from "swr";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { set } from "date-fns";
 
 type Props = {
   pageId: string;
@@ -31,10 +30,10 @@ export const TotalLoan = (props:Props) => {
     return acc
   }, [])
 
-  const averageAmount = formatData.reduce((acc:any, record:any) => {
+  const averageAmount = parseFloat(( formatData.reduce((acc:any, record:any) => {
     acc += record.pay_amount
     return acc
-  }, 0) / formatData.length
+  }, 0) / formatData.length ).toFixed(1))
 
   const maxAmount = formatData.reduce((acc:any, record:any) => {
     if (acc < record.pay_amount) {
