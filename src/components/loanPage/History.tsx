@@ -34,7 +34,7 @@ export const History = (props:Props) => {
 
   const formSchema = z.object({
     payerName: z.string().min(1, {message: "名前を入力してください"}),
-    amount: z.number().min(1, {message: "金額を入力してください"}),
+    amount: z.coerce.number().min(1, {message: "金額を入力してください"}),
     payTime: z.date(),
     note: z.string().min(1, {message: "メモを入力してください"}),
   });
