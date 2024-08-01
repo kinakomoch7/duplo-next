@@ -71,7 +71,7 @@ export const FormPage = () => {
             <FormItem>
               <FormLabel>支払い金額</FormLabel>
               <FormControl>
-                <Input {...field} type="number" />
+                <Input {...field} inputMode='numeric' />
               </FormControl>
               <FormMessage />
             </FormItem>
