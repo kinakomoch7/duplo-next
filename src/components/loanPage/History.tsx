@@ -13,6 +13,7 @@ import { z } from "zod";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Input } from "../ui/input";
+import { useEffect } from "react";
 
 
 type Props = {
@@ -50,25 +51,31 @@ export const History = (props:Props) => {
     },
   });
 
-  const updateHandler = async (value: z.infer<typeof formSchema>) => {
+  useEffect(() => {
+    form.reset({
+      payerName: name,
+      amount: amount,
+      payTime: new Date(time),
+      note: note,
+    });
+  }, [name, amount, time, note, form]);
 
-    console.log(value)
-      
-      const res = await fetch("/api/updateHistory", {
-        method: "POST",
-        body: JSON.stringify({historyId, ...value}),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-  
-      if (res.status === 200) {
-        mutate(`/api/getHistory/${pageId}`)
-      }
-      if (res.status === 500) {
-        return alert("エラーが発生しました")
-      }
+  const updateHandler = async (value: z.infer<typeof formSchema>) => {
+    const res = await fetch("/api/updateHistory", {
+      method: "POST",
+      body: JSON.stringify({historyId, ...value}),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 200) {
+      mutate(`/api/getHistory/${pageId}`)
     }
+    if (res.status === 500) {
+      return alert("エラーが発生しました")
+    }
+  }
 
   const deleteHandler = async() => {
     const res = await fetch("/api/deleteHistory", {

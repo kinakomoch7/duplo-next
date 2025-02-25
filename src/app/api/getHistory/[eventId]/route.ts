@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "../../Pool";
 
-export async function GET(req: NextRequest, {params}: {params:{ eventId: string }}) {
-
+export async function GET(req: NextRequest, { params }: { params: { eventId: string } }) {
   const eventId = params.eventId;
 
   try {
-
-    const client = await pool.connect();
-    const result = await client.query(`
+    // 直接 pool.query を使い、接続の確立と解放を自動化
+    const result = await pool.query(
+      `
       SELECT
         t.url,
         t.last_edit,
@@ -25,14 +24,11 @@ export async function GET(req: NextRequest, {params}: {params:{ eventId: string 
         t.event_id = h.event_id
       WHERE
         t.url = $1
-    `, [eventId]);
+      `,
+      [eventId]
+    );
 
-    client.release();
-
-    const data = result.rows;
-
-    return NextResponse.json(data);
-
+    return NextResponse.json(result.rows);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: "error" });

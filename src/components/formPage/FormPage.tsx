@@ -6,14 +6,14 @@ import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage, Form } from "../ui/form";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
 
 export const FormPage = () => {
-
-  const router = useRouter()
+  const router = useRouter();
+  const { pageId } = useParams();
 
   const formSchema = z.object({
     payerName: z.string().min(1, {message: "名前を入力してください"}),
@@ -44,7 +44,7 @@ export const FormPage = () => {
     });
 
     if (res.status === 200) {
-      router.back();
+      router.push(`/${pageId}`);
     }
   };
 
