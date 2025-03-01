@@ -23,6 +23,12 @@ export const LoanPage = ({ pageId }: Props) => {
 
   const toggleSortOrder = () => setIsAscending(!isAscending);
 
+  // 日付を YYYY年MM月 のフォーマットに変換
+  const formatDateHeader = (dateString: string) => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}年${date.getMonth() + 1}月`;
+  };
+
   const renderHistoryList = useCallback(() => {
     if (isLoading) {
       return (
@@ -35,29 +41,42 @@ export const LoanPage = ({ pageId }: Props) => {
     }
     if (!data || data.length === 0) return <div>履歴がありません</div>;
 
+    let previousMonth = ""; // 前回の履歴の月を保持
+
     return [...data]
       .sort((a, b) =>
         isAscending
           ? new Date(a.pay_time).getTime() - new Date(b.pay_time).getTime()
           : new Date(b.pay_time).getTime() - new Date(a.pay_time).getTime()
       )
-      .map((item, index) => (
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: index * 0.1 }}
-        >
-          <History
-            name={item.payer_name}
-            amount={item.pay_amount}
-            time={item.pay_time}
-            note={item.note}
-            historyId={item.history_id}
-            pageId={pageId}
-          />
-        </motion.div>
-      ));
+      .flatMap((item, index) => {
+        const currentMonth = formatDateHeader(item.pay_time);
+        const isNewMonth = currentMonth !== previousMonth;
+        previousMonth = currentMonth;
+
+        return [
+          isNewMonth && (
+            <div key={`month-${currentMonth}`} className="font-medium text-sm mt-3">
+              {currentMonth}
+            </div>
+          ),
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+          >
+            <History
+              name={item.payer_name}
+              amount={item.pay_amount}
+              time={item.pay_time}
+              note={item.note}
+              historyId={item.history_id}
+              pageId={pageId}
+            />
+          </motion.div>,
+        ];
+      });
   }, [isLoading, data, isAscending, pageId]);
 
   return (
@@ -77,14 +96,8 @@ export const LoanPage = ({ pageId }: Props) => {
         {renderHistoryList()}
       </section>
 
-      {/* URL コピー
-      <section>
-        <h2 className="border-b-2 border-slate-400 mb-3">この画面のURL</h2>
-        <CopyUrl />
-      </section> */}
-
       {/* 追加ボタン */}
-      <FloatingButton onClick={() => router.push(`${pageId}/form`)} />
+      <FloatingButton onClick={() => router.push(`/${pageId}/form`)} />
     </div>
   );
 };

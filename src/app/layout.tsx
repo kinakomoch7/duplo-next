@@ -3,6 +3,7 @@ import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Header } from "@/components/common/Header";
+import { UpdateNotifier } from "@/components/common/UpdateNotifier";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" >
       <body className={cn(fontSans.variable)}>
+        <UpdateNotifier />
         <Header />
         <div className="max-w-4xl p-3 m-auto">
           {children}
