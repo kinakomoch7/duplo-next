@@ -21,7 +21,7 @@ export const LoanPage = ({ pageId }: Props) => {
   const { data, error, isLoading } = useSWR(`/api/getHistory/${pageId}`, fetcher);
   const [isAscending, setIsAscending] = useState(false);
   const [searchText, setSearchText] = useState(""); // 検索キーワード
-  const [isSearchVisible, setIsSearchVisible] = useState(false); // 検索バーの表示・非表示
+  const [isSearchVisible, setIsSearchVisible] = useState(false); // 検索バーの表示・非表示WEBサイトｗ
 
   const toggleSortOrder = () => setIsAscending(!isAscending);
   const toggleSearch = () => {
@@ -105,12 +105,12 @@ export const LoanPage = ({ pageId }: Props) => {
           <div className="flex items-center space-x-2">
             <SortButton isAscending={isAscending} onClick={toggleSortOrder} />
             { !isSearchVisible ? (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6" onClick={toggleSearch}>
-              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6" onClick={toggleSearch}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6" onClick={toggleSearch}>
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6" onClick={toggleSearch}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
               </svg>
             )}
           </div>
