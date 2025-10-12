@@ -2,8 +2,23 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  images: {
-    unoptimized: true, // 静的ファイルを Next.js の画像最適化なしで提供
+  experimental: {
+    serverComponentsExternalPackages: [
+      "thread-stream",
+      "pino",
+      "pino-worker",
+      "pino-file",
+      "pino-pretty",
+    ],
+  },
+  webpack: (config) => {
+    // パスエイリアスを追加します
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@": ".",
+    };
+
+    return config;
   },
 };
 
