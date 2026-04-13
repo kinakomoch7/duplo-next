@@ -1,6 +1,7 @@
+// sw-version: test-1
+
 self.addEventListener("install", (event) => {
   console.log("Service Worker installing...");
-  self.skipWaiting(); // 即時適用
 });
 
 self.addEventListener("activate", (event) => {
