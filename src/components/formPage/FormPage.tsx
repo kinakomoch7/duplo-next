@@ -10,26 +10,30 @@ import { useParams, useRouter } from "next/navigation";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
+import { Switch } from "../ui/switch";
+import { PayerNameSelector } from "../common/PayerNameSelector";
 
 export const FormPage = () => {
   const router = useRouter();
-  const { pageId } = useParams();
+  const { pageId } = useParams<{ pageId: string }>();
 
   const formSchema = z.object({
     payerName: z.string().min(1, {message: "名前を入力してください"}),
     amount: z.coerce.number().min(1, {message: "金額を入力してください"}),
     payTime: z.date(),
     note: z.string().min(1, {message: "メモを入力してください"}),
+    isIncluded: z.boolean(),
   });
 
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      payerName: "山田",
-      amount: 1000,
+      payerName: "",
+      amount: undefined as unknown as number,
       payTime: new Date(),
       note: "メモ",
+      isIncluded: true,
     },
   });
 
@@ -37,7 +41,7 @@ export const FormPage = () => {
 
     const res = await fetch("/api/postHistory", {
       method: "POST",
-      body: JSON.stringify({eventId: 1 , ...value}),
+      body: JSON.stringify({ pageId, ...value }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -50,7 +54,7 @@ export const FormPage = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleClick)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleClick)} className="space-y-6" autoComplete="off">
         <FormField
           control={form.control}
           name='payerName'
@@ -58,8 +62,16 @@ export const FormPage = () => {
             <FormItem>
               <FormLabel>支払い者名</FormLabel>
               <FormControl>
-                <Input placeholder='山田たろう' {...field} />
+                <PayerNameSelector
+                  pageId={pageId}
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder='山田たろう'
+                />
               </FormControl>
+              <FormDescription>
+                登録済みの名前を選ぶか、新しい名前を入力できます
+              </FormDescription>
               <FormMessage />
             </FormItem>
             }
@@ -71,7 +83,13 @@ export const FormPage = () => {
             <FormItem>
               <FormLabel>支払い金額</FormLabel>
               <FormControl>
-                <Input {...field} inputMode='numeric' />
+                <Input
+                  {...field}
+                  value={field.value ?? ""}
+                  inputMode='numeric'
+                  placeholder='1000'
+                  autoComplete='off'
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -119,7 +137,7 @@ export const FormPage = () => {
             <FormItem>
               <FormLabel>メモ</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} autoComplete='off' spellCheck={false} />
               </FormControl>
               <FormDescription>
                 支払内容に関するメモを入力してください
@@ -128,6 +146,23 @@ export const FormPage = () => {
             </FormItem>
             }
           />
+        <FormField
+          control={form.control}
+          name='isIncluded'
+          render={({ field }) =>
+            <FormItem className="flex items-center justify-between rounded-lg border p-4">
+              <div className="space-y-1">
+                <FormLabel>計上に含める</FormLabel>
+                <FormDescription>
+                  オフにすると履歴は残りますが、総額と差額の計算から除外します
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
+              </FormControl>
+            </FormItem>
+          }
+        />
         <Button type="submit" className="block mx-auto">支払いを登録</Button>
       </form>
     </Form>

@@ -11,6 +11,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { motion } from "framer-motion";
 import { SortButton } from "./SortButton";
 import { Input } from "../ui/input"; // 検索用
+import type { HistoryRecord } from "@/lib/history";
 
 type Props = {
   pageId: string;
@@ -28,6 +29,18 @@ export const LoanPage = ({ pageId }: Props) => {
     setIsSearchVisible(!isSearchVisible);
     setSearchText("");
   }; // 検索バーをトグル
+
+  const compareHistory = useCallback((a: HistoryRecord, b: HistoryRecord) => {
+    const timeDiff = new Date(a.pay_time).getTime() - new Date(b.pay_time).getTime();
+
+    if (timeDiff !== 0) {
+      return isAscending ? timeDiff : -timeDiff;
+    }
+
+    return isAscending
+      ? a.history_id - b.history_id
+      : b.history_id - a.history_id;
+  }, [isAscending]);
 
   // 日付を YYYY年MM月 のフォーマットに変換
   const formatDateHeader = (dateString: string) => {
@@ -50,12 +63,8 @@ export const LoanPage = ({ pageId }: Props) => {
     let previousMonth = ""; // 前回の履歴の月を保持
 
     // データを並び替えて検索結果をフィルタリング
-    const filteredData = [...data]
-      .sort((a, b) =>
-        isAscending
-          ? new Date(a.pay_time).getTime() - new Date(b.pay_time).getTime()
-          : new Date(b.pay_time).getTime() - new Date(a.pay_time).getTime()
-      )
+    const filteredData = [...(data as HistoryRecord[])]
+      .sort(compareHistory)
       .filter((item) =>
         item.note.toLowerCase().includes(searchText.toLowerCase()) // 部分一致・大文字小文字無視
       );
@@ -84,17 +93,19 @@ export const LoanPage = ({ pageId }: Props) => {
             note={item.note}
             historyId={item.history_id}
             pageId={pageId}
+            isIncluded={item.is_included}
           />
         </motion.div>,
       ];
     });
-  }, [isLoading, data, isAscending, searchText, pageId]);
+  }, [isLoading, data, compareHistory, searchText, pageId]);
 
   return (
     <div className="space-y-5 md:space-y-7">
       {/* 支払額 */}
       <section>
-        <h2 className="font-bold mt-3 mb-3">支払額</h2>
+        <h2 className="font-bold mt-3 mb-2">支払額</h2>
+        <div className="mb-3 text-sm text-muted-foreground">計上対象の履歴のみ集計しています。</div>
         <TotalLoan pageId={pageId} />
       </section>
 
@@ -131,22 +142,40 @@ export const LoanPage = ({ pageId }: Props) => {
       </section>
 
       {/* 追加ボタン */}
-      <FloatingButton onClick={() => router.push(`/${pageId}/form`)} />
+      <FloatingButtons
+        onCreateSingle={() => router.push(`/${pageId}/form`)}
+        onCreateBulkInclude={() => router.push(`/${pageId}/include`)}
+      />
     </div>
   );
 };
 
-/** 追加ボタン */
-const FloatingButton = ({ onClick }: { onClick: () => void }) => (
+const FloatingButtons = ({
+  onCreateSingle,
+  onCreateBulkInclude,
+}: {
+  onCreateSingle: () => void;
+  onCreateBulkInclude: () => void;
+}) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.8 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.3 }}
-    className="fixed z-50 bottom-8 right-8 py-5 px-5 bg-gray-300 rounded-full cursor-pointer"
-    onClick={onClick}
+    className="fixed bottom-8 right-6 z-50 flex flex-col gap-3"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-    </svg>
+    <button
+      className="rounded-full bg-slate-700 px-4 py-3 text-sm font-medium text-white shadow-lg"
+      onClick={onCreateBulkInclude}
+    >
+      まとめて計上
+    </button>
+    <button
+      className="rounded-full bg-gray-300 px-5 py-5 shadow-lg"
+      onClick={onCreateSingle}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+    </button>
   </motion.div>
 );

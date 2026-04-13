@@ -14,6 +14,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Input } from "../ui/input";
 import { useEffect } from "react";
+import { Switch } from "../ui/switch";
+import { PayerNameSelector } from "../common/PayerNameSelector";
 
 
 type Props = {
@@ -23,11 +25,12 @@ type Props = {
   note: string;
   historyId: number;
   pageId: string;
+  isIncluded: boolean;
 }
 
 export const History = (props:Props) => {
 
-  const { name, amount, time, note, historyId, pageId } = props;
+  const { name, amount, time, note, historyId, pageId, isIncluded } = props;
 
   const { mutate } = useSWRConfig();
 
@@ -38,6 +41,7 @@ export const History = (props:Props) => {
     amount: z.coerce.number().min(1, {message: "金額を入力してください"}),
     payTime: z.date(),
     note: z.string().min(1, {message: "メモを入力してください"}),
+    isIncluded: z.boolean(),
   });
 
 
@@ -48,6 +52,7 @@ export const History = (props:Props) => {
       amount: amount,
       payTime: new Date(time),
       note: note,
+      isIncluded,
     },
   });
 
@@ -57,8 +62,9 @@ export const History = (props:Props) => {
       amount: amount,
       payTime: new Date(time),
       note: note,
+      isIncluded,
     });
-  }, [name, amount, time, note, form]);
+  }, [name, amount, time, note, isIncluded, form]);
 
   const updateHandler = async (value: z.infer<typeof formSchema>) => {
     const res = await fetch("/api/updateHistory", {
@@ -93,9 +99,16 @@ export const History = (props:Props) => {
 
 
   return (
-    <Card className="p-3">
+    <Card className={`p-3 ${!isIncluded ? "border-dashed opacity-80" : ""}`}>
       <div className="flex flex-1 justify-between">
-        <div className="font-bold">{name}</div>
+        <div className="space-y-1">
+          <div className="font-bold">{name}</div>
+          {!isIncluded ? (
+            <div className="text-xs text-amber-800">
+              <span className="rounded-full bg-amber-100 px-2 py-1">計上外</span>
+            </div>
+          ) : null}
+        </div>
         <div>{amount.toLocaleString()}円</div>
 
         <div className="flex space-x-3">
@@ -112,7 +125,7 @@ export const History = (props:Props) => {
                 <DialogDescription>履歴の編集</DialogDescription>
               </DialogHeader>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(updateHandler)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(updateHandler)} className="space-y-6" autoComplete="off">
                   <fieldset>
                   <FormField
                     control={form.control}
@@ -121,8 +134,16 @@ export const History = (props:Props) => {
                       <FormItem>
                         <FormLabel>支払い者名</FormLabel>
                         <FormControl>
-                          <Input placeholder='山田たろう' {...field} />
+                          <PayerNameSelector
+                            pageId={pageId}
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder='山田たろう'
+                          />
                         </FormControl>
+                        <FormDescription>
+                          登録済みの名前を選ぶか、新しい名前を入力できます
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                       }
@@ -134,7 +155,7 @@ export const History = (props:Props) => {
                       <FormItem>
                         <FormLabel>支払い金額</FormLabel>
                         <FormControl>
-                          <Input {...field} type="number" />
+                          <Input {...field} type="number" autoComplete='off' />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -182,13 +203,30 @@ export const History = (props:Props) => {
                       <FormItem>
                         <FormLabel>メモ</FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input {...field} autoComplete='off' spellCheck={false} />
                         </FormControl>
                         <FormDescription>
                           支払内容に関するメモを入力してください
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
+                      }
+                    />
+                    <FormField
+                      control={form.control}
+                      name='isIncluded'
+                      render={({ field }) =>
+                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-1">
+                            <FormLabel>計上に含める</FormLabel>
+                            <FormDescription>
+                              オフにすると履歴は残りますが、総額と差額の計算から除外します
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                        </FormItem>
                       }
                     />
                     <DialogFooter>
@@ -235,4 +273,3 @@ export const History = (props:Props) => {
     </Card>
   )
 }
-

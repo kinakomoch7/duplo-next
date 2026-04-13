@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { motion } from "framer-motion";
+import type { HistoryRecord } from "@/lib/history";
 
 type Props = {
   pageId: string;
@@ -26,15 +27,17 @@ export const TotalLoan = ({ pageId }: Props) => {
   // データが取得できない場合の処理（フックの順番を守る）
   const formatData = useMemo(() => {
     if (!data || isLoading) return []; // isLoading の場合は空の配列を返す
-    return data.reduce((acc: any, record: any) => {
-      const isRecord = acc.find((item: any) => item.payer_name === record.payer_name);
-      if (isRecord) {
-        isRecord.pay_amount += record.pay_amount;
-      } else {
-        acc.push({ payer_name: record.payer_name, pay_amount: record.pay_amount });
-      }
-      return acc;
-    }, []);
+    return (data as HistoryRecord[])
+      .filter((record) => record.is_included)
+      .reduce((acc: any, record: HistoryRecord) => {
+        const isRecord = acc.find((item: any) => item.payer_name === record.payer_name);
+        if (isRecord) {
+          isRecord.pay_amount += record.pay_amount;
+        } else {
+          acc.push({ payer_name: record.payer_name, pay_amount: record.pay_amount });
+        }
+        return acc;
+      }, []);
   }, [data, isLoading]);
 
   const averageAmount = useMemo(() => {

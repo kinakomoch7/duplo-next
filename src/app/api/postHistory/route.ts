@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "../Pool";
+import {
+  getEventIdByPageId,
+  normalizeIsIncluded,
+} from "../historyHelpers";
 
 export async function POST(req: NextRequest) {
 
@@ -8,6 +12,18 @@ export async function POST(req: NextRequest) {
 
 
   try {
+    const eventId = data.pageId
+      ? await getEventIdByPageId(client, data.pageId)
+      : data.eventId;
+
+    if (!eventId) {
+      return NextResponse.json({
+          message: "event not found"
+        }, {
+          status: 404
+        }
+      );
+    }
   
     await client.query(`
       INSERT INTO
@@ -16,17 +32,26 @@ export async function POST(req: NextRequest) {
           payer_name,
           pay_amount,
           pay_time,
-          note
+          note,
+          is_included
         )
         VALUES (
           $1,
           $2,
           $3,
           $4,
-          $5
+          $5,
+          $6
         )
     
-      `, [data.eventId, data.payerName, data.amount, data.payTime, data.note]);
+      `, [
+        eventId,
+        data.payerName,
+        data.amount,
+        data.payTime,
+        data.note,
+        normalizeIsIncluded(data.isIncluded),
+      ]);
   
     return NextResponse.json({
         message: "success"

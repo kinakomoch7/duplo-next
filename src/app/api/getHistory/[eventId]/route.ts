@@ -3,10 +3,12 @@ import { pool } from "../../Pool";
 
 export async function GET(req: NextRequest, { params }: { params: { eventId: string } }) {
   const eventId = params.eventId;
+  let client;
 
   try {
-    // 直接 pool.query を使い、接続の確立と解放を自動化
-    const result = await pool.query(
+    client = await pool.connect();
+
+    const result = await client.query(
       `
       SELECT
         t.url,
@@ -15,7 +17,8 @@ export async function GET(req: NextRequest, { params }: { params: { eventId: str
         h.payer_name,
         h.pay_amount,
         h.pay_time,
-        h.note
+        h.note,
+        h.is_included
       FROM
         treat t
       JOIN
@@ -31,6 +34,14 @@ export async function GET(req: NextRequest, { params }: { params: { eventId: str
     return NextResponse.json(result.rows);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ message: "error" });
+    return NextResponse.json(
+      {
+        message: "error",
+        detail: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
+  } finally {
+    client?.release();
   }
 }

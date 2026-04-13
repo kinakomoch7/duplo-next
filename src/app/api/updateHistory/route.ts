@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "../Pool";
+import {
+  normalizeIsIncluded,
+} from "../historyHelpers";
 
 export async function POST(req: NextRequest) {
 
@@ -10,16 +13,23 @@ export async function POST(req: NextRequest) {
 
 
   try {
-  
     await client.query(`
       UPDATE history
         SET payer_name = $2,
             pay_amount = $3,
             pay_time = $4,
-            note = $5
+            note = $5,
+            is_included = $6
         WHERE history_id = $1
     
-      `, [data.historyId, data.payerName, data.amount, data.payTime, data.note]);
+      `, [
+        data.historyId,
+        data.payerName,
+        data.amount,
+        data.payTime,
+        data.note,
+        normalizeIsIncluded(data.isIncluded),
+      ]);
   
     return NextResponse.json({
         message: "success"
