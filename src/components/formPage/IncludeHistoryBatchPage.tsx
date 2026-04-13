@@ -20,6 +20,13 @@ export const IncludeHistoryBatchPage = () => {
     () => ((data as HistoryRecord[] | undefined) ?? []).filter((history) => !history.is_included),
     [data]
   );
+  const selectedTotalAmount = useMemo(
+    () =>
+      excludedHistories
+        .filter((history) => selectedHistoryIds.includes(history.history_id))
+        .reduce((sum, history) => sum + history.pay_amount, 0),
+    [excludedHistories, selectedHistoryIds]
+  );
 
   const toggleHistory = (historyId: number, checked: boolean) => {
     setSelectedHistoryIds((currentIds) =>
@@ -110,6 +117,10 @@ export const IncludeHistoryBatchPage = () => {
             </Card>
           );
         })}
+      </div>
+
+      <div className="text-sm font-medium">
+        選択した合計金額: {selectedTotalAmount.toLocaleString()}円
       </div>
 
       {errorMessage ? <div className="text-sm text-red-500">{errorMessage}</div> : null}
