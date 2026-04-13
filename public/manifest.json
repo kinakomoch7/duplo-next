@@ -2,6 +2,7 @@
   "name": "割り勘清算アプリ",
   "short_name": "清算アプリ",
   "description": "支払額をメモして管理するPWAアプリ",
+  "display": "standalone",
   "icons": [
     {
       "src": "/pwa_icon_512x512.png",
